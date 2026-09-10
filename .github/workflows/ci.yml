@@ -34,3 +34,6 @@ jobs:
           python-version: "3.14"
       - run: pip install -r requirements.txt
       - run: python -c "import app.main"
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost/dummy
+          SECRET_KEY: dummy-ci-secret
