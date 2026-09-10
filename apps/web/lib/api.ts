@@ -36,3 +36,35 @@ export async function login(email: string, password: string) {
     }
     return res.json() as Promise<{ access_token: string; token_type: string}>;
 }
+
+export type Space = {
+  id: number;
+  name: string;
+  space_type: string;
+  capacity: number;
+};
+
+export type Booking = {
+  id: number;
+  space_id: number;
+  user_id: number;
+  start_time: string;
+  end_time: string;
+  status: string;
+};
+
+export async function getSpaces(token: string): Promise<Space[]> {
+  const res = await fetch(`${API_URL}/spaces/`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Impossibile caricare gli spazi");
+  return res.json();
+}
+
+export async function getMyBookings(token: string): Promise<Booking[]> {
+  const res = await fetch(`${API_URL}/bookings/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Impossibile caricare le prenotazioni");
+  return res.json();
+}

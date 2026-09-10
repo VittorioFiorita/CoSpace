@@ -5,6 +5,7 @@ import { login as apiLogin } from "./api";
 
 type AuthContextValue = {
   token: string | null;
+  isReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
@@ -13,11 +14,13 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("token");
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (stored) setToken(stored);
+    setIsReady(true);
   }, []);
 
   async function login(email: string, password: string) {
@@ -32,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, isReady, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
