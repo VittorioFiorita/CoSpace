@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class UserCreate(BaseModel):
     email: str
@@ -25,3 +26,16 @@ class SpaceRead(BaseModel):
     name:str
     space_type: str
     capacity: int
+
+class BookingCreate(BaseModel):
+    space_id: int
+    start_time: datetime
+    end_time: datetime
+
+class BookingRead(BaseModel):
+    id: int
+    space_id: int
+    user_id: int
+    start_time: datetime
+    end_time: datetime
+    status: str
