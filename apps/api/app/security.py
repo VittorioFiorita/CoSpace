@@ -5,7 +5,16 @@ from datetime import datetime, timedelta
 import jwt
 from dotenv import load_dotenv
 
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from sqlmodel import Session, select
+
+from .database import get_session
+from .models import User
+
 load_dotenv()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
@@ -25,3 +34,15 @@ def create_access_token(data: dict) -> str:
 
 def decode_access_token(token:str) -> dict:
     return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)) -> User:
+    try:
+        payload = decode_access_token(token)
+        email = payload.get("sub")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token invalido o scaduto")
+
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Token invalido o scaduto")
+    return user
