@@ -90,3 +90,11 @@ export async function createBooking(token: string, data: BookingCreate): Promise
   }
   return res.json();
 }
+
+export async function cancelBooking(token: string, bookingId: number): Promise<void> {
+  const res = await fetch(`${API_URL}/bookings/${bookingId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Impossibile cancellare la prenotazione");
+}
