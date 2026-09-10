@@ -14,3 +14,14 @@ class UserRead(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+class SpaceCreate(BaseModel):
+    name: str
+    space_type: str
+    capacity: int
+
+class SpaceRead(BaseModel):
+    id: int
+    name:str
+    space_type: str
+    capacity: int

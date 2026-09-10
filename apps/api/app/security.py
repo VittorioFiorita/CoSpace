@@ -46,3 +46,8 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
     if not user:
         raise HTTPException(status_code=401, detail="Token invalido o scaduto")
     return user
+
+def require_staff(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role not in ("admin", "staff"):
+        raise HTTPException(status_code=403, detail="Non autorizzato")
+    return current_user
