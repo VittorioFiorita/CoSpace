@@ -68,3 +68,25 @@ export async function getMyBookings(token: string): Promise<Booking[]> {
   if (!res.ok) throw new Error("Impossibile caricare le prenotazioni");
   return res.json();
 }
+
+export type BookingCreate = {
+  space_id: number;
+  start_time: string;
+  end_time: string;
+};
+
+export async function createBooking(token: string, data: BookingCreate): Promise<Booking> {
+  const res = await fetch(`${API_URL}/bookings/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.detail ?? "Impossibile creare la prenotazione");
+  }
+  return res.json();
+}

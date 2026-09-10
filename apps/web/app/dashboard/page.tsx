@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth-context";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import { getSpaces, getMyBookings, type Space, type Booking } from "@/lib/api";
 import { Sidebar } from "@/components/Sidebar";
 import { StatCard } from "@/components/StatCard";
@@ -10,17 +9,10 @@ import { WeekCalendarCard } from "@/components/WeekCalendarCard";
 import { SpacesListCard } from "@/components/SpacesListCard";
 
 export default function DashboardPage() {
-  const { token, isReady } = useAuth();
-  const router = useRouter();
+  const { token, ready } = useRequireAuth();
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (isReady && !token) {
-      router.push("/login");
-    }
-  }, [isReady, token, router]);
 
   useEffect(() => {
     if (!token) return;
@@ -32,7 +24,7 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  if (!isReady || loading || !token) {
+  if (!ready || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-page text-text">
         Caricamento…
