@@ -8,7 +8,7 @@ from alembic import context
 import os
 from dotenv import load_dotenv
 from sqlmodel import SQLModel
-import models
+from app import models
 
 load_dotenv()
 
