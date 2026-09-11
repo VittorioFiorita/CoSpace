@@ -136,3 +136,19 @@ export async function sendChatMessage(token: string, message: string): Promise<s
   const data = await res.json();
   return data.reply;
 }
+
+export async function getUsers(token: string): Promise<User[]> {
+  const res = await authFetch(`${API_URL}/users/`, token);
+  if (!res.ok) throw new Error("Impossibile caricare gli utenti");
+  return res.json();
+}
+
+export async function updateUserRole(token: string, userId: number, role: string): Promise<User> {
+  const res = await authFetch(`${API_URL}/users/${userId}/role`, token, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ role }),
+  });
+  if (!res.ok) throw new Error("Impossibile aggiornare il ruolo");
+  return res.json();
+}

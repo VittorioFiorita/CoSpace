@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { getAllBookings, getSpaces, type Space, type Booking } from "@/lib/api";
+import { UserManagementCard } from "@/components/UserManagementCard";
 
 export default function AnalyticsPage() {
   const { token, ready } = useRequireAuth("staff");
@@ -101,6 +102,10 @@ export default function AnalyticsPage() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+
+        <div className="mt-4">
+          <UserManagementCard />
         </div>
       </div>
   );
