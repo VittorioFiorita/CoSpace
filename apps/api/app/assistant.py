@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from sqlmodel import Session, select
 
@@ -12,10 +12,14 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 
 from .retrieval import retrieve_relevant_chunks
+from collections import defaultdict
 
 load_dotenv()
 
 client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+_chat_calls: dict[int, list[datetime]] = defaultdict(list)
+CHAT_RATE_LIMIT = 20  # messaggi per ora per utente
+CHAT_RATE_WINDOW = timedelta(hours=1)
 MODEL = "claude-haiku-4-5-20251001"
 
 SYSTEM_PROMPT = """Sei l'assistente virtuale di CoSpace, uno spazio coworking a Milano.
@@ -128,3 +132,12 @@ def chat(session, user, message: str) -> str:
         messages.append({"role": "user", "content": tool_results})
 
     return "Mi dispiace, non sono riuscito a completare la richiesta."
+
+def check_rate_limit(user_id: int) -> bool:
+    now = datetime.utcnow()
+    calls = _chat_calls[user_id]
+    calls[:] = [t for t in calls if now - t < CHAT_RATE_WINDOW]
+    if len(calls) >= CHAT_RATE_LIMIT:
+        return False
+    calls.append(now)
+    return True
