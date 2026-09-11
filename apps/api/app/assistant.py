@@ -59,16 +59,17 @@ TOOLS = [
 def run_tool(session: Session, user: User, tool_name: str, tool_input: dict) -> str:
     if tool_name == "list_my_bookings":
         bookings = session.exec(select(Booking).where(Booking.user_id == user.id)).all()
-        return json.dumps([
-            {
+        result = []
+        for b in bookings:
+            space = session.get(Space, b.space_id)
+            result.append({
                 "id": b.id,
-                "space_id": b.space_id,
+                "space_name": space.name if space else "Spazio sconosciuto",
                 "start_time": b.start_time.isoformat(),
                 "end_time": b.end_time.isoformat(),
                 "status": b.status,
-            }
-            for b in bookings
-        ])
+            })
+        return json.dumps(result)
 
     if tool_name == "list_spaces":
         spaces = session.exec(select(Space)).all()

@@ -123,3 +123,17 @@ export async function getAllBookings(token: string): Promise<Booking[]> {
   if (!res.ok) throw new Error("Impossibile caricare le prenotazioni");
   return res.json();
 }
+
+export async function sendChatMessage(token: string, message: string): Promise<string> {
+  const res = await fetch(`${API_URL}/assistant/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ message }),
+  });
+  if (!res.ok) throw new Error("Impossibile contattare l'assistente");
+  const data = await res.json();
+  return data.reply;
+}

@@ -16,6 +16,7 @@ export function Sidebar() {
     { href: "/dashboard", label: "Dashboard" },
     { href: "/bookings", label: "Prenotazioni" },
     { href: "/spaces", label: "Spazi" },
+    { href: "/assistant", label: "Assistente" },
     ...(user && ["admin", "staff"].includes(user.role)
       ? [{ href: "/admin/analytics", label: "Analytics" }]
       : []),
