@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { getSpaces, getMyBookings, cancelBooking, type Space, type Booking } from "@/lib/api";
-import { Sidebar } from "@/components/Sidebar";
 
 export default function BookingsPage() {
   const { token, ready } = useRequireAuth();
@@ -45,9 +44,7 @@ export default function BookingsPage() {
 
   if (!ready || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-page text-text">
-        Caricamento…
-      </div>
+      <div className="p-9 text-text">Caricamento…</div>
     );
   }
 
@@ -56,8 +53,6 @@ export default function BookingsPage() {
   );
 
   return (
-    <div className="min-h-screen flex bg-bg-page">
-      <Sidebar />
       <div className="flex-1 p-9">
         <div className="font-heading text-2xl font-bold text-text mb-1">Prenotazioni</div>
         <div className="text-sm text-text-secondary mb-6">Tutte le tue prenotazioni.</div>
@@ -114,6 +109,5 @@ export default function BookingsPage() {
           )}
         </div>
       </div>
-    </div>
   );
 }

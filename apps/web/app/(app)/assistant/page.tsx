@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { sendChatMessage } from "@/lib/api";
-import { Sidebar } from "@/components/Sidebar";
 import ReactMarkdown from "react-markdown"
 
 type ChatMessage = {
@@ -45,15 +44,11 @@ export default function AssistantPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-page text-text">
-        Caricamento…
-      </div>
+      <div className="p-9 text-text">Caricamento…</div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-bg-page">
-      <Sidebar />
       <div className="flex-1 flex flex-col p-9 max-w-2xl">
         <div className="font-heading text-2xl font-bold text-text mb-1">Assistente</div>
         <div className="text-sm text-text-secondary mb-6">
@@ -113,6 +108,5 @@ export default function AssistantPage() {
           </button>
         </form>
       </div>
-    </div>
   );
 }

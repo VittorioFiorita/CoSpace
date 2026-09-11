@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { getSpaces, getMyBookings, type Space, type Booking } from "@/lib/api";
-import { Sidebar } from "@/components/Sidebar";
 import { BookingModal } from "@/components/BookingModal";
 
 export default function SpacesPage() {
@@ -42,15 +41,12 @@ export default function SpacesPage() {
 
   if (!ready || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-page text-text">
-        Caricamento…
-      </div>
+      <div className="p-9 text-text">Caricamento…</div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-bg-page">
-      <Sidebar />
+    <>
       <div className="flex-1 p-9">
         <div className="font-heading text-2xl font-bold text-text mb-1">Spazi</div>
         <div className="text-sm text-text-secondary mb-6">
@@ -97,6 +93,6 @@ export default function SpacesPage() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }

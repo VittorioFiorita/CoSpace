@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { getSpaces, getMyBookings, type Space, type Booking } from "@/lib/api";
-import { Sidebar } from "@/components/Sidebar";
 import { StatCard } from "@/components/StatCard";
 import { WeekCalendarCard } from "@/components/WeekCalendarCard";
 import { SpacesListCard } from "@/components/SpacesListCard";
@@ -26,9 +25,7 @@ export default function DashboardPage() {
 
   if (!ready || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-page text-text">
-        Caricamento…
-      </div>
+      <div className="p-9 text-text">Caricamento…</div>
     );
   }
 
@@ -44,8 +41,6 @@ export default function DashboardPage() {
   ).length;
 
   return (
-    <div className="min-h-screen flex bg-bg-page">
-      <Sidebar />
       <div className="flex-1 p-9">
         <div className="font-heading text-2xl font-bold text-text mb-1">Dashboard</div>
         <div className="text-sm text-text-secondary mb-6">Ecco lo stato dello spazio oggi.</div>
@@ -68,6 +63,5 @@ export default function DashboardPage() {
           <SpacesListCard spaces={spaces} bookings={bookings} />
         </div>
       </div>
-    </div>
   );
 }

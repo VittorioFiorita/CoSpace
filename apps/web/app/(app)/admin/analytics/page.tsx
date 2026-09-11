@@ -14,7 +14,6 @@ import {
 } from "recharts";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { getAllBookings, getSpaces, type Space, type Booking } from "@/lib/api";
-import { Sidebar } from "@/components/Sidebar";
 
 export default function AnalyticsPage() {
   const { token, ready } = useRequireAuth("staff");
@@ -63,15 +62,11 @@ export default function AnalyticsPage() {
 
   if (!ready || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-page text-text">
-        Caricamento…
-      </div>
+      <div className="p-9 text-text">Caricamento…</div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-bg-page">
-      <Sidebar />
       <div className="flex-1 p-9">
         <div className="font-heading text-2xl font-bold text-text mb-1">Analytics</div>
         <div className="text-sm text-text-secondary mb-6">
@@ -108,6 +103,5 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
