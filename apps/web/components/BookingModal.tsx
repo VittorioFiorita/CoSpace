@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/lib/auth-context";
-import { createBooking, type Space } from "@/lib/api";
+import { useCreateBooking } from "@/lib/queries";
+import { type Space } from "@/lib/api";
 
 export function BookingModal({
   space,
@@ -13,30 +13,21 @@ export function BookingModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
-  const { token } = useAuth();
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const createBooking = useCreateBooking();
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!token) return;
-    setError(null);
-    setSubmitting(true);
-    try {
-      await createBooking(token, {
+    createBooking.mutate(
+      {
         space_id: space.id,
         start_time: `${date}T${startTime}:00`,
         end_time: `${date}T${endTime}:00`,
-      });
-      onCreated();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore imprevisto");
-    } finally {
-      setSubmitting(false);
-    }
+      },
+      { onSuccess: onCreated }
+    );
   }
 
   return (
@@ -48,7 +39,11 @@ export function BookingModal({
         <div className="font-heading text-lg font-bold text-text mb-1">Prenota {space.name}</div>
         <div className="text-sm text-text-secondary mb-4">{space.capacity} posti</div>
 
-        {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
+        {createBooking.isError && (
+          <div className="mb-3 text-sm text-red-600">
+            {createBooking.error instanceof Error ? createBooking.error.message : "Errore imprevisto"}
+          </div>
+        )}
 
         <label className="block text-sm font-medium text-text-secondary mb-1">Data</label>
         <input
@@ -92,10 +87,10 @@ export function BookingModal({
           </button>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={createBooking.isPending}
             className="flex-1 rounded-lg bg-accent text-white py-2 text-sm font-semibold disabled:opacity-60"
           >
-            {submitting ? "Prenoto…" : "Prenota"}
+            {createBooking.isPending ? "Prenoto…" : "Prenota"}
           </button>
         </div>
       </form>

@@ -1,32 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { getSpaces, getMyBookings, type Space, type Booking } from "@/lib/api";
+import { useSpaces, useMyBookings } from "@/lib/queries";
 import { BookingModal } from "@/components/BookingModal";
+import type { Space } from "@/lib/api";
 
 export default function SpacesPage() {
-  const { token, ready } = useRequireAuth();
-  const [spaces, setSpaces] = useState<Space[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { ready } = useRequireAuth();
+  const { data: spaces = [], isLoading: spacesLoading } = useSpaces();
+  const { data: bookings = [], isLoading: bookingsLoading } = useMyBookings();
   const [selectedSpace, setSelectedSpace] = useState<Space | null>(null);
-
-  const loadData = useCallback(() => {
-    if (!token) return;
-    setLoading(true);
-    Promise.all([getSpaces(token), getMyBookings(token)])
-        .then(([s, b]) => {
-        setSpaces(s);
-        setBookings(b);
-        })
-        .finally(() => setLoading(false));
-  }, [token]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadData();
-  }, [loadData]);
 
   function isOccupiedNow(spaceId: number) {
     const now = new Date();
@@ -39,7 +23,7 @@ export default function SpacesPage() {
     );
   }
 
-  if (!ready || loading) {
+  if (!ready || spacesLoading || bookingsLoading) {
     return (
       <div className="p-9 text-text">Caricamento…</div>
     );
@@ -87,10 +71,7 @@ export default function SpacesPage() {
         <BookingModal
           space={selectedSpace}
           onClose={() => setSelectedSpace(null)}
-          onCreated={() => {
-            setSelectedSpace(null);
-            loadData();
-          }}
+          onCreated={() => setSelectedSpace(null)}
         />
       )}
     </>
