@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lora, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { AppQueryProvider } from "@/lib/query-provider";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${lora.variable} ${workSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <AppQueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </AppQueryProvider>
       </body>
     </html>
   );
