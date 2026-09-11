@@ -1,40 +1,56 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+async function authFetch(url: string, token: string, options: RequestInit = {}): Promise<Response> {
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (res.status === 401) {
+    localStorage.removeItem("token");
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- authFetch è fuori da un componente React, useRouter() non è disponibile qui; un reload completo è anche voluto per azzerare lo stato
+    window.location.href = "/login";
+  }
+  return res;
+}
+
 type RegisterData = {
-    email: string;
-    password: string;
-    full_name: string;
+  email: string;
+  password: string;
+  full_name: string;
 };
 
 export async function register(data: RegisterData) {
-    const res = await fetch(`${API_URL}/auth/register`, {
-        method: "POST", 
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
-    if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.detail ?? "Registrazione fallita");
-    }
-    return res.json();
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.detail ?? "Registrazione fallita");
+  }
+  return res.json();
 }
 
 export async function login(email: string, password: string) {
-    const body = new URLSearchParams();
-    body.set("username", email);
-    body.set("password", password)
+  const body = new URLSearchParams();
+  body.set("username", email);
+  body.set("password", password);
 
-    const res = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body,
-    });
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
 
-    if(!res.ok) {
-        const error = await res.json();
-        throw new Error(error.detail ?? "Login fallito")
-    }
-    return res.json() as Promise<{ access_token: string; token_type: string}>;
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.detail ?? "Login fallito");
+  }
+  return res.json() as Promise<{ access_token: string; token_type: string }>;
 }
 
 export type Space = {
@@ -54,17 +70,13 @@ export type Booking = {
 };
 
 export async function getSpaces(token: string): Promise<Space[]> {
-  const res = await fetch(`${API_URL}/spaces/`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await authFetch(`${API_URL}/spaces/`, token);
   if (!res.ok) throw new Error("Impossibile caricare gli spazi");
   return res.json();
 }
 
 export async function getMyBookings(token: string): Promise<Booking[]> {
-  const res = await fetch(`${API_URL}/bookings/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await authFetch(`${API_URL}/bookings/me`, token);
   if (!res.ok) throw new Error("Impossibile caricare le prenotazioni");
   return res.json();
 }
@@ -76,12 +88,9 @@ export type BookingCreate = {
 };
 
 export async function createBooking(token: string, data: BookingCreate): Promise<Booking> {
-  const res = await fetch(`${API_URL}/bookings/`, {
+  const res = await authFetch(`${API_URL}/bookings/`, token, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!res.ok) {
@@ -92,9 +101,8 @@ export async function createBooking(token: string, data: BookingCreate): Promise
 }
 
 export async function cancelBooking(token: string, bookingId: number): Promise<void> {
-  const res = await fetch(`${API_URL}/bookings/${bookingId}`, {
+  const res = await authFetch(`${API_URL}/bookings/${bookingId}`, token, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error("Impossibile cancellare la prenotazione");
 }
@@ -104,33 +112,24 @@ export type User = {
   email: string;
   full_name: string;
   role: string;
-}
+};
 
 export async function getMe(token: string): Promise<User> {
-  const res = await fetch(`${API_URL}/auth/me`, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
-
+  const res = await authFetch(`${API_URL}/auth/me`, token);
   if (!res.ok) throw new Error("Impossibile recuperare l'utente");
   return res.json();
 }
 
 export async function getAllBookings(token: string): Promise<Booking[]> {
-  const res = await fetch(`${API_URL}/bookings/`, {
-    headers: {Authorization: `Bearer ${token}`},
-  })
-
+  const res = await authFetch(`${API_URL}/bookings/`, token);
   if (!res.ok) throw new Error("Impossibile caricare le prenotazioni");
   return res.json();
 }
 
 export async function sendChatMessage(token: string, message: string): Promise<string> {
-  const res = await fetch(`${API_URL}/assistant/chat`, {
+  const res = await authFetch(`${API_URL}/assistant/chat`, token, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message }),
   });
   if (!res.ok) throw new Error("Impossibile contattare l'assistente");
