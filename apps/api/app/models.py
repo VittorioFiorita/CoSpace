@@ -1,5 +1,7 @@
 from datetime import datetime
 from sqlmodel import SQLModel, Field
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import Column
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -23,4 +25,10 @@ class Booking(SQLModel, table=True):
     start_time: datetime
     end_time: datetime
     status: str = Field(default="confirmed")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class KnowledgeChunk(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    content: str
+    embedding: list[float] = Field(sa_column=Column(Vector(384)))
     created_at: datetime = Field(default_factory=datetime.utcnow)
