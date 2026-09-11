@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, UTC
 
 from sqlmodel import Session, select
 
@@ -134,7 +134,7 @@ def chat(session, user, message: str) -> str:
     return "Mi dispiace, non sono riuscito a completare la richiesta."
 
 def check_rate_limit(user_id: int) -> bool:
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     calls = _chat_calls[user_id]
     calls[:] = [t for t in calls if now - t < CHAT_RATE_WINDOW]
     if len(calls) >= CHAT_RATE_LIMIT:
