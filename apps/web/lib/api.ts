@@ -98,3 +98,28 @@ export async function cancelBooking(token: string, bookingId: number): Promise<v
   });
   if (!res.ok) throw new Error("Impossibile cancellare la prenotazione");
 }
+
+export type User = {
+  id: number;
+  email: string;
+  full_name: string;
+  role: string;
+}
+
+export async function getMe(token: string): Promise<User> {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    headers: {Authorization: `Bearer ${token}`},
+  });
+
+  if (!res.ok) throw new Error("Impossibile recuperare l'utente");
+  return res.json();
+}
+
+export async function getAllBookings(token: string): Promise<Booking[]> {
+  const res = await fetch(`${API_URL}/bookings/`, {
+    headers: {Authorization: `Bearer ${token}`},
+  })
+
+  if (!res.ok) throw new Error("Impossibile caricare le prenotazioni");
+  return res.json();
+}

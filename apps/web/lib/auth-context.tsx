@@ -1,10 +1,11 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { login as apiLogin } from "./api";
+import { login as apiLogin, getMe, type User } from "./api";
 
 type AuthContextValue = {
   token: string | null;
+  user: User | null;
   isReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("token");
@@ -22,6 +24,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (stored) setToken(stored);
     setIsReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUser(null);
+      return;
+    }
+    getMe(token).then(setUser).catch(() => setUser(null));
+  }, [token])
 
   async function login(email: string, password: string) {
     const data = await apiLogin(email, password);
@@ -35,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, isReady, login, logout }}>
+    <AuthContext.Provider value={{ token, user, isReady, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

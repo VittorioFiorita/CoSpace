@@ -5,16 +5,21 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/bookings", label: "Prenotazioni" },
-  { href: "/spaces", label: "Spazi" },
-];
+
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [dark, setDark] = useState(false);
+
+  const navItems = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/bookings", label: "Prenotazioni" },
+    { href: "/spaces", label: "Spazi" },
+    ...(user && ["admin", "staff"].includes(user.role)
+      ? [{ href: "/admin/analytics", label: "Analytics" }]
+      : []),
+  ];
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");

@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from ..database import get_session
 from ..models import Booking, Space, User
 from ..schemas import BookingCreate, BookingRead
-from ..security import get_current_user
+from ..security import get_current_user, require_staff
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 
@@ -39,3 +39,7 @@ def cancel_booking(booking_id: int, session: Session = Depends(get_session), cur
     booking.status = "cancelled"
     session.add(booking)
     session.commit()
+
+@router.get("/", response_model=list[BookingRead])
+def list_all_bookings(session: Session = Depends(get_session), current_user: User = Depends(require_staff)):
+    return session.exec(select(Booking)).all()

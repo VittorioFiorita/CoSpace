@@ -4,15 +4,24 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./auth-context";
 
-export function useRequireAuth() {
-  const { token, isReady } = useAuth();
+const STAFF_ROLES = ["admin", "staff"];
+
+export function useRequireAuth(requiredRole?: "staff") {
+  const { token, user, isReady } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isReady && !token) {
-      router.push("/login");
-    }
-  }, [isReady, token, router]);
+  const hasRole = !requiredRole || (user ? STAFF_ROLES.includes(user.role) : false);
 
-  return { token, ready: isReady && !!token };
+  useEffect(() => {
+    if (!isReady) return;
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    if (user && !hasRole) {
+      router.push("/dashboard");
+    }
+  }, [isReady, token, user, hasRole, router])
+
+  return { token, user, ready: isReady && !!token && hasRole };
 }
