@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
+import { useMemo } from "react";
+import { 
   ResponsiveContainer,
   LineChart,
   Line,
@@ -10,33 +10,16 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip
 } from "recharts";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { getAllBookings, getSpaces, type Space, type Booking } from "@/lib/api";
+import { useSpaces, useAllBookings } from "@/lib/queries";
 import { UserManagementCard } from "@/components/UserManagementCard";
 
 export default function AnalyticsPage() {
-  const { token, ready } = useRequireAuth("staff");
-  const [spaces, setSpaces] = useState<Space[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const loadData = useCallback(() => {
-    if (!token) return;
-    setLoading(true);
-    Promise.all([getSpaces(token), getAllBookings(token)])
-      .then(([s, b]) => {
-        setSpaces(s);
-        setBookings(b);
-      })
-      .finally(() => setLoading(false));
-  }, [token]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadData();
-  }, [loadData]);
+  const { ready } = useRequireAuth("staff");
+  const { data: spaces = [], isLoading: spacesLoading } = useSpaces();
+  const { data: bookings = [], isLoading: bookingsLoading } = useAllBookings();
 
   const trendData = useMemo(() => {
     const days: { date: string; count: number }[] = [];
@@ -61,7 +44,7 @@ export default function AnalyticsPage() {
     }));
   }, [spaces, bookings]);
 
-  if (!ready || loading) {
+  if (!ready || spacesLoading || bookingsLoading) {
     return (
       <div className="p-9 text-text">Caricamento…</div>
     );
