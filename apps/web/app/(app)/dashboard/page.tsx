@@ -1,32 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { getSpaces, getMyBookings, type Space, type Booking } from "@/lib/api";
+import { useSpaces, useMyBookings } from "@/lib/queries";
 import { StatCard } from "@/components/StatCard";
 import { WeekCalendarCard } from "@/components/WeekCalendarCard";
 import { SpacesListCard } from "@/components/SpacesListCard";
 
 export default function DashboardPage() {
-  const { token, ready } = useRequireAuth();
-  const [spaces, setSpaces] = useState<Space[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { ready } = useRequireAuth();
+  const { data: spaces = [], isLoading: spacesLoading } = useSpaces();
+  const { data: bookings = [], isLoading: bookingsLoading} = useMyBookings();
 
-  useEffect(() => {
-    if (!token) return;
-    Promise.all([getSpaces(token), getMyBookings(token)])
-      .then(([s, b]) => {
-        setSpaces(s);
-        setBookings(b);
-      })
-      .finally(() => setLoading(false));
-  }, [token]);
-
-  if (!ready || loading) {
+  if (!ready || spacesLoading || bookingsLoading) {
     return (
-      <div className="p-9 text-text">Caricamento…</div>
-    );
+      <div className="p-9 text-text">Caricamento...</div>
+    )
   }
 
   const now = new Date();
