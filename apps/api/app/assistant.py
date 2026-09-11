@@ -100,13 +100,16 @@ def chat(session, user, message: str) -> str:
     messages = [{"role": "user", "content": message}]
 
     for _ in range(5):
-        response = client.messages.create(
-            model=MODEL,
-            max_tokens=1024,
-            system=system,
-            tools=TOOLS,
-            messages=messages,
-        )
+        try:
+            response = client.messages.create(
+                model=MODEL,
+                max_tokens=1024,
+                system=system,
+                tools=TOOLS,
+                messages=messages,
+            )
+        except Exception:
+            return "Mi dispiace, l'assistente non è al momento disponibile. Riprova tra qualche minuto."
 
         if response.stop_reason != "tool_use":
             return "".join(block.text for block in response.content if block.type == "text")
