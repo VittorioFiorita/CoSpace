@@ -1,20 +1,24 @@
 import Link from "next/link";
+import { BookingsIcon, AssistantIcon, AnalyticsIcon } from "@/components/icons";
 
 const FEATURES = [
   {
     title: "Prenotazioni in tempo reale",
     description:
       "Prenota sale riunioni e postazioni in pochi click, con controllo automatico delle sovrapposizioni.",
+    icon: BookingsIcon,
   },
   {
     title: "Assistente AI integrato",
     description:
       "Chiedi in linguaggio naturale: l'assistente conosce le policy dello spazio e può prenotare al posto tuo.",
+    icon: AssistantIcon,
   },
   {
     title: "Analytics per lo staff",
     description:
       "Dashboard con andamento prenotazioni e occupazione per spazio, per chi gestisce il coworking.",
+    icon: AnalyticsIcon,
   },
 ];
 
@@ -85,12 +89,18 @@ export function LandingPage() {
 
       <section className="px-9 pb-16">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="bg-bg-card border border-border rounded-2xl p-5">
-              <div className="text-sm font-semibold text-text mb-2">{f.title}</div>
-              <div className="text-xs text-text-secondary">{f.description}</div>
-            </div>
-          ))}
+          {FEATURES.map((f) => {
+            const Icon = f.icon;
+            return (
+              <div key={f.title} className="bg-bg-card border border-border rounded-2xl p-5">
+                <div className="w-9 h-9 rounded-lg bg-accent-soft text-accent flex items-center justify-center mb-3">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="text-sm font-semibold text-text mb-2">{f.title}</div>
+                <div className="text-xs text-text-secondary">{f.description}</div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>

@@ -4,6 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import {
+  DashboardIcon,
+  BookingsIcon,
+  SpacesIcon,
+  AssistantIcon,
+  AnalyticsIcon,
+  LogoutIcon,
+  SunIcon,
+  MoonIcon,
+} from "@/components/icons";
 
 
 
@@ -13,12 +23,12 @@ export function Sidebar() {
   const [dark, setDark] = useState(false);
 
   const navItems = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/bookings", label: "Prenotazioni" },
-    { href: "/spaces", label: "Spazi" },
-    { href: "/assistant", label: "Assistente" },
+    { href: "/dashboard", label: "Dashboard", icon: DashboardIcon },
+    { href: "/bookings", label: "Prenotazioni", icon: BookingsIcon },
+    { href: "/spaces", label: "Spazi", icon: SpacesIcon },
+    { href: "/assistant", label: "Assistente", icon: AssistantIcon },
     ...(user && ["admin", "staff"].includes(user.role)
-      ? [{ href: "/admin/analytics", label: "Analytics" }]
+      ? [{ href: "/admin/analytics", label: "Analytics", icon: AnalyticsIcon }]
       : []),
   ];
 
@@ -42,14 +52,16 @@ export function Sidebar() {
       <nav className="flex flex-col gap-0.5">
         {navItems.map((item) => {
           const active = pathname === item.href;
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium ${
                 active ? "bg-accent-soft text-accent" : "text-text-secondary"
               }`}
             >
+              <Icon className="w-4.5 h-4.5" />
               {item.label}
             </Link>
           );
@@ -62,7 +74,10 @@ export function Sidebar() {
         onClick={() => setDark((d) => !d)}
         className="flex items-center justify-between px-3 py-2 mb-2 text-sm text-text-secondary"
       >
-        <span>Tema scuro</span>
+        <span className="flex items-center gap-2.5">
+          {dark ? <MoonIcon className="w-4.5 h-4.5" /> : <SunIcon className="w-4.5 h-4.5" />}
+          Tema scuro
+        </span>
         <span
           className={`w-8.5 h-4.75 rounded-full relative transition-colors ${
             dark ? "bg-accent" : "bg-border"
@@ -78,8 +93,9 @@ export function Sidebar() {
 
       <button
         onClick={logout}
-        className="text-left px-3 py-2 rounded-lg border border-border text-sm text-text"
+        className="flex items-center gap-2.5 text-left px-3 py-2 rounded-lg border border-border text-sm text-text"
       >
+        <LogoutIcon className="w-4.5 h-4.5" />
         Esci
       </button>
     </div>
