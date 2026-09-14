@@ -51,6 +51,7 @@ CoSpace è un gestionale prenotazioni per spazi di coworking (sale riunioni, scr
 
 - Autenticazione JWT con ruoli (member / staff / admin)
 - Prenotazione spazi con controllo automatico delle sovrapposizioni
+- Gestione spazi (creazione/eliminazione, orari di apertura e chiusura) per staff/admin
 - Dashboard con stato dello spazio in tempo reale (calendario settimanale, disponibilità)
 - Dashboard analitica per lo staff (andamento prenotazioni, popolarità per spazio) con grafici Recharts
 - Gestione ruoli utenti (admin)
@@ -67,7 +68,7 @@ CoSpace è un gestionale prenotazioni per spazi di coworking (sale riunioni, scr
 
 **AI** — Anthropic Claude (Haiku) per il tool-use loop, embedding locali (`sentence-transformers`, `all-MiniLM-L6-v2`) per l'indicizzazione RAG
 
-**Infra** — Docker, GitHub Actions CI (lint, build, test su ogni push), deploy su Vercel (frontend) + Google Cloud Run (backend) + Neon (database)
+**Infra** — Docker, GitHub Actions CI/CD (lint, build, test e deploy automatico del backend su ogni push a `master`, autenticazione via Workload Identity Federation), deploy su Vercel (frontend) + Google Cloud Run (backend) + Neon (database)
 
 ## Architettura
 
@@ -107,18 +108,19 @@ cp .env.example .env.local      # NEXT_PUBLIC_API_URL=http://localhost:8000
 npm run dev
 ```
 
-## Test e CI
+## Test, CI e deploy
 
 ```bash
 cd apps/api
 pytest
 ```
 
-GitHub Actions esegue lint + build sul frontend e test + smoke-test sul backend ad ogni push.
+GitHub Actions esegue lint + build sul frontend e test + smoke-test sul backend ad ogni push. Sui push a `master`, se i test del backend passano, un job dedicato (`deploy-api`) distribuisce automaticamente l'immagine aggiornata su Cloud Run — autenticazione tramite Workload Identity Federation, nessuna chiave statica salvata su GitHub.
 
 ## Scelte architetturali degne di nota
 
 - **RAG + tool-calling separati, non confusi**: solo il documento di policy usa la ricerca vettoriale; le query su spazi/prenotazioni (dati strutturati) passano per tool-calling diretto sul DB, non per RAG — distinzione tecnica precisa, non solo terminologica.
 - **Cold start accettato consapevolmente**: `sentence-transformers`/`torch` vengono caricati una sola volta per processo (`@lru_cache`), quindi il costo è un delay di pochi secondi solo sulla primissima richiesta all'assistente dopo un periodo di inattività su Cloud Run — scelta esplicita rispetto a pagare per un'istanza sempre attiva, ragionevole per un progetto a basso traffico.
 - **Rate limiting in-memory**: sliding window per-utente (20 msg/ora) sull'endpoint dell'assistente, per proteggere il budget dell'API Claude — non persistente/distribuito, tradeoff accettabile alla scala attuale.
-- **Deploy manuale, non ancora CI/CD completo**: il backend viene distribuito con `gcloud run deploy` da terminale; automatizzarlo con GitHub Actions è il prossimo passo pianificato.
+- **Deploy automatico via Workload Identity Federation, non chiavi statiche**: GitHub Actions si autentica su GCP tramite un token OIDC di breve durata invece di una chiave JSON permanente — nessun segreto a lunga vita da proteggere o ruotare, il pattern raccomandato da Google stessa.
+- **Migration del database manuali, non automatizzate nel deploy**: applicarle in automatico ad ogni deploy è un salto di rischio diverso (rollback, dati esistenti) che merita una decisione a parte — per ora restano un passo esplicito e consapevole.
