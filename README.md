@@ -7,6 +7,39 @@ Gestionale per spazi di coworking con un assistente AI integrato — prenotazion
 
 [![CI](https://github.com/VittorioFiorita/CoSpace/actions/workflows/ci.yml/badge.svg)](https://github.com/VittorioFiorita/CoSpace/actions/workflows/ci.yml)
 
+## Screenshot
+
+**Landing page**
+
+![Landing page](docs/screenshots/Landing-Page.png)
+
+**Dashboard**
+
+![Dashboard](docs/screenshots/Dashboard.png)
+
+**Prenotazione spazi**
+
+![Spazi](docs/screenshots/Spaces-Page.png)
+
+**Le tue prenotazioni**
+
+![Prenotazioni](docs/screenshots/Reservation-Page.png)
+
+**Assistente AI** — RAG (policy dello spazio) + tool-calling (prenotazione in linguaggio naturale)
+
+![Assistente AI](docs/screenshots/AI-Assistant-Page.png)
+
+**Dashboard analitica (staff)**
+
+![Analytics](docs/screenshots/Analytics.png)
+
+<details>
+<summary>Tema chiaro</summary>
+
+![Dashboard tema chiaro](docs/screenshots/Dashboard-Light.png)
+
+</details>
+
 ## Cos'è
 
 CoSpace è un gestionale prenotazioni per spazi di coworking (sale riunioni, scrivanie): i membri prenotano spazi e gestiscono le proprie prenotazioni, lo staff/admin ha accesso a una dashboard analitica e alla gestione ruoli utenti. La caratteristica distintiva è l'assistente AI: non un semplice chatbot, ma un agente che combina due tecniche diverse —
