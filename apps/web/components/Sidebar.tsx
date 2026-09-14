@@ -8,7 +8,6 @@ import {
   DashboardIcon,
   BookingsIcon,
   SpacesIcon,
-  AssistantIcon,
   AnalyticsIcon,
   LogoutIcon,
   SunIcon,
@@ -26,7 +25,6 @@ export function Sidebar() {
     { href: "/dashboard", label: "Dashboard", icon: DashboardIcon },
     { href: "/bookings", label: "Prenotazioni", icon: BookingsIcon },
     { href: "/spaces", label: "Spazi", icon: SpacesIcon },
-    { href: "/assistant", label: "Assistente", icon: AssistantIcon },
     ...(user && ["admin", "staff"].includes(user.role)
       ? [{ href: "/admin/analytics", label: "Analytics", icon: AnalyticsIcon }]
       : []),
