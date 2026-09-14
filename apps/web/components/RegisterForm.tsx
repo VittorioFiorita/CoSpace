@@ -10,18 +10,21 @@ export function RegisterForm() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setSubmitting(true);
     try {
       await register({ email, password, full_name: fullName });
       await login(email, password);
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Errore imprevisto");
+      setSubmitting(false);
     }
   }
 
@@ -61,8 +64,12 @@ export function RegisterForm() {
         className="w-full mb-6 rounded-lg border border-border bg-bg-page px-3 py-2 text-text"
       />
 
-      <button type="submit" className="w-full rounded-lg bg-accent text-white py-2 font-semibold">
-        Registrati
+      <button
+        type="submit"
+        disabled={submitting}
+        className="w-full rounded-lg bg-accent text-white py-2 font-semibold disabled:opacity-60"
+      >
+        {submitting ? "Registrazione…" : "Registrati"}
       </button>
     </form>
   );
