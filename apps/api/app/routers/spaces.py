@@ -21,7 +21,7 @@ def get_space(space_id: int, session: Session = Depends(get_session), current_us
 
 @router.post("/", response_model=SpaceRead)
 def create_space(data: SpaceCreate, session: Session = Depends(get_session), current_user: User = Depends(require_staff)):
-    space = Space(name=data.name, space_type=data.space_type, capacity=data.capacity)
+    space = Space(**data.model_dump())
     session.add(space)
     session.commit()
     session.refresh(space)

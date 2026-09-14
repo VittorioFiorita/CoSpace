@@ -2,15 +2,20 @@
 
 import { useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { useSpaces, useMyBookings } from "@/lib/queries";
+import { useSpaces, useMyBookings, useDeleteSpace } from "@/lib/queries";
 import { BookingModal } from "@/components/BookingModal";
+import { SpaceModal } from "@/components/SpaceModal";
 import type { Space } from "@/lib/api";
 
 export default function SpacesPage() {
-  const { ready } = useRequireAuth();
+  const { ready, user } = useRequireAuth();
   const { data: spaces = [], isLoading: spacesLoading } = useSpaces();
   const { data: bookings = [], isLoading: bookingsLoading } = useMyBookings();
   const [selectedSpace, setSelectedSpace] = useState<Space | null>(null);
+  const [showSpaceModal, setShowSpaceModal] = useState(false);
+  const deleteSpace = useDeleteSpace();
+
+  const isStaff = !!user && ["admin", "staff"].includes(user.role);
 
   function isOccupiedNow(spaceId: number) {
     const now = new Date();
@@ -32,19 +37,47 @@ export default function SpacesPage() {
   return (
     <>
       <div className="flex-1 p-9">
-        <div className="font-heading text-2xl font-bold text-text mb-1">Spazi</div>
-        <div className="text-sm text-text-secondary mb-6">
-          Tutti gli spazi disponibili nel coworking.
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <div className="font-heading text-2xl font-bold text-text mb-1">Spazi</div>
+            <div className="text-sm text-text-secondary">Tutti gli spazi disponibili nel coworking</div>
+          </div>
+          {isStaff && (
+            <button
+              onClick={() => setShowSpaceModal(true)}
+              className="rounded-lg bg-accent text-white px-4 py-2 text-sm font-semibold"
+            >
+              + Nuovo spazio
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-4">
           {spaces.map((space) => {
             const occupied = isOccupiedNow(space.id);
+            const isDeleting = deleteSpace.isPending && deleteSpace.variables === space.id;
             return (
-              <div key={space.id} className="bg-bg-card border border-border rounded-2xl p-5">
+              <div key={space.id} className="relative bg-bg-card border border-border rounded-2xl p-5">
+                {isStaff && (
+                  <button
+                    onClick={() => {
+                      if (confirm(`Eliminare "${space.name}"?`)) {
+                        deleteSpace.mutate(space.id);
+                      }
+                    }}
+                    disabled={isDeleting}
+                    className="absolute top-3 right-3 text-text-secondary hover:text-red-600 text-lg leading-none disabled:opacity-60"
+                    aria-label="Elimina spazio"
+                  >
+                    ×
+                  </button>
+                )}
                 <div className="text-sm font-semibold text-text mb-1">{space.name}</div>
                 <div className="text-xs text-text-secondary mb-3">
                   {space.space_type === "meeting_room" ? `${space.capacity} posti` : "Scrivania"}
+                  {space.opening_time && space.closing_time && (
+                    <> · {space.opening_time}–{space.closing_time}</>
+                  )}
                 </div>
                 <span
                   className={`text-xs font-semibold px-2.5 py-1 rounded-full inline-block mb-3 ${
@@ -74,6 +107,8 @@ export default function SpacesPage() {
           onCreated={() => setSelectedSpace(null)}
         />
       )}
+
+      {showSpaceModal && <SpaceModal onClose={() => setShowSpaceModal(false)} />}
     </>
   );
 }

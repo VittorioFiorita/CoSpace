@@ -16,6 +16,8 @@ class Space(SQLModel, table=True):
     name: str
     space_type: str
     capacity: int
+    opening_time: str | None = None
+    closing_time: str | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 class Booking(SQLModel, table=True):
