@@ -25,7 +25,7 @@ Gestionale per spazi di coworking con un assistente AI integrato — prenotazion
 
 ![Prenotazioni](docs/screenshots/Reservation-Page.png)
 
-**Assistente AI** — RAG (policy dello spazio) + tool-calling (prenotazione in linguaggio naturale)
+**Assistente AI** — widget flottante disponibile su ogni pagina, combina RAG (policy dello spazio) e tool-calling (prenotazione in linguaggio naturale)
 
 ![Assistente AI](docs/screenshots/AI-Assistant-Page.png)
 
@@ -54,7 +54,7 @@ CoSpace è un gestionale prenotazioni per spazi di coworking (sale riunioni, scr
 - Dashboard con stato dello spazio in tempo reale (calendario settimanale, disponibilità)
 - Dashboard analitica per lo staff (andamento prenotazioni, popolarità per spazio) con grafici Recharts
 - Gestione ruoli utenti (admin)
-- Assistente AI conversazionale (RAG + tool-calling)
+- Assistente AI come widget flottante, accessibile da ogni pagina (RAG + tool-calling)
 - Rate limiting per-utente sull'endpoint dell'assistente
 - Tema chiaro/scuro
 - Landing page pubblica, responsive
