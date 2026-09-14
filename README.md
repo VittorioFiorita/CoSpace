@@ -27,7 +27,7 @@ Gestionale per spazi di coworking con un assistente AI integrato — prenotazion
 
 **Assistente AI** — widget flottante disponibile su ogni pagina, combina RAG (policy dello spazio) e tool-calling (prenotazione in linguaggio naturale)
 
-![Assistente AI](docs/screenshots/AI-Assistant-Page.png)
+![Assistente AI](docs/screenshots/AI-Assistant-Widget.png)
 
 **Dashboard analitica (staff)**
 
