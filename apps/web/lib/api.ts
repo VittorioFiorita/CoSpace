@@ -58,6 +58,8 @@ export type Space = {
   name: string;
   space_type: string;
   capacity: number;
+  opening_time: string | null;
+  closing_time: string | null;
 };
 
 export type Booking = {
@@ -151,4 +153,32 @@ export async function updateUserRole(token: string, userId: number, role: string
   });
   if (!res.ok) throw new Error("Impossibile aggiornare il ruolo");
   return res.json();
+}
+
+export type SpaceCreate = {
+  name: string;
+  space_type: string;
+  capacity: number;
+  opening_time: string | null;
+  closing_time: string | null;
+};
+
+export async function createSpace(token: string, data: SpaceCreate): Promise<Space> {
+  const res = await authFetch(`${API_URL}/spaces/`, token, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.detail ?? "Impossibile creare lo spazio");
+  }
+  return res.json();
+}
+
+export async function deleteSpace(token: string, spaceId: number): Promise<void> {
+  const res = await authFetch(`${API_URL}/spaces/${spaceId}`, token, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Impossibile eliminare lo spazio");
 }

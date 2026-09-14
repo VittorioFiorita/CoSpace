@@ -21,12 +21,16 @@ class SpaceCreate(BaseModel):
     name: str
     space_type: str
     capacity: int
+    opening_time: str | None = None
+    closing_time: str | None = None
 
 class SpaceRead(BaseModel):
     id: int
-    name:str
+    name: str
     space_type: str
     capacity: int
+    opening_time: str | None = None
+    closing_time: str | None = None
 
 class BookingCreate(BaseModel):
     space_id: int

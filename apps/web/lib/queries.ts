@@ -10,6 +10,9 @@ import {
     createBooking,
     cancelBooking,
     updateUserRole,
+    createSpace,
+    deleteSpace,
+    type SpaceCreate,
     type BookingCreate
 } from "./api"
 
@@ -81,6 +84,28 @@ export function useUpdateUserRole() {
       updateUserRole(token!, userId, role),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+}
+
+export function useCreateSpace() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: SpaceCreate) => createSpace(token!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
+    },
+  });
+}
+
+export function useDeleteSpace() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (spaceId: number) => deleteSpace(token!, spaceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
     },
   });
 }
