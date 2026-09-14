@@ -72,16 +72,16 @@ CoSpace è un gestionale prenotazioni per spazi di coworking (sale riunioni, scr
 ## Architettura
 
 ```
-┌─────────────┐      HTTPS       ┌──────────────┐      SQL/pgvector    ┌─────────────┐
-│  Next.js     │ ───────────────▶ │   FastAPI     │ ────────────────────▶ │  PostgreSQL │
-│  (Vercel)    │ ◀─────────────── │  (Cloud Run)  │ ◀──────────────────── │  (Neon)     │
-└─────────────┘      JSON/JWT    └──────┬───────┘                       └─────────────┘
+┌─────────────┐      HTTPS        ┌──────────────┐      SQL/pgvector      ┌─────────────┐
+│  Next.js    │ ───────────────▶ │   FastAPI     │ ────────────────────▶ │  PostgreSQL │
+│  (Vercel)   │ ◀─────────────── │  (Cloud Run)  │ ◀──────────────────── │  (Neon)     │
+└─────────────┘      JSON/JWT     └──────┬───────┘                        └─────────────┘
                                           │
                                           │ tool-use loop
                                           ▼
                                   ┌──────────────┐
-                                  │  Claude API   │
-                                  │  (Haiku)      │
+                                  │  Claude API  │
+                                  │  (Haiku)     │
                                   └──────────────┘
 ```
 

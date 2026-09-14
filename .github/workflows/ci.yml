@@ -46,3 +46,33 @@ jobs:
           DATABASE_URL: postgresql://user:pass@localhost/dummy
           SECRET_KEY: dummy-ci-secret
           ANTHROPIC_API_KEY: dummy-ci-key
+
+  deploy-api:
+    needs: api
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - run: |
+          gcloud run deploy cospace-api \
+            --source . \
+            --region europe-west1 \
+            --project cospace-prod \
+            --allow-unauthenticated \
+            --memory 1Gi \
+            --set-env-vars "DATABASE_URL=${{ secrets.PROD_DATABASE_URL }},SECRET_KEY=${{ secrets.PROD_SECRET_KEY }},ANTHROPIC_API_KEY=${{ secrets.PROD_ANTHROPIC_API_KEY }}"
